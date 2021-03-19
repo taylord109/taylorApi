@@ -8,8 +8,10 @@ const fileController = new FileController();
 
 fileRoutes.route('/')
     .get(fileController.getFiles)
-    .post(fileController.addFile);
+//.post(fileController.addFile);
 
 fileRoutes.route('/:fileId')
     .get(fileController.getFileById)
-    .put(fileController.updateFile);
+//.put(fileController.updateFile);
+
+fileRoutes.get('/download/:fileName', fileController.getDownloadFile)

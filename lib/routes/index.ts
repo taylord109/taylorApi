@@ -18,6 +18,7 @@ allRoutes.get('/', (req, res) => {
 allRoutes.get('/new', (req, res) => {
     res.send("Wow");
 });
+
 allRoutes.post('/wake', PCHandler.wakeUpDesktop);
 // allRoutes.get("/files", (req, res) => {
 //     try {
