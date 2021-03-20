@@ -65,9 +65,9 @@ export class FileController {
         if (!req?.params?.name) return res.status(400).send("No file found in db").end();
         File.findOne({ name: req.params.name }, async (err: mongoose.CallbackError, files) => {
             if (err) return res.status(400).send("Db find error: " + err.message).end();
-            if (!files || !files["_doc"] || !files["_doc"]["path"]) return res.status(400).send("No file found in db").end();
+            if (!files || !files["_doc"] || !files["_doc"]["thumbnail"]) return res.status(400).send("No thumbnail found in db").end();
             let file = files._doc;
-            const path: string = "/var/external" + file.path;
+            const path: string = "/var/external" + file.thumbnail;
             var hasFile = await new Promise<boolean>((resolve, reject) => {
                 fs.lstat(path, (err, results) => {
                     if (err) return resolve(false)
