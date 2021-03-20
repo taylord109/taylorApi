@@ -39,7 +39,7 @@ export class FileController {
     public getDownloadFile(req: Request, res: Response) {
         if (!req?.params?.fileName) return res.status(400).send("No file found in db").end();
         File.findOne({ filename: req.params.fileName }, async (err: mongoose.CallbackError, files) => {
-            if (err) return res.status(400).send(err.message).end();
+            if (err) return res.status(400).send("Db find error: " + err.message).end();
             if (!files || !files["_doc"] || !files["_doc"]["path"]) return res.status(400).send("No file found in db").end();
             let file = files._doc;
             const path: string = "/var/external" + file.path;
@@ -54,8 +54,7 @@ export class FileController {
             var stream = fs.createReadStream(path);
 
             stream.on('error', function (error) {
-                res.writeHead(404, 'Not Found');
-                res.end();
+                return res.status(400).send("Error in streaming: " + error.message).end();
             });
 
             return stream.pipe(res);
