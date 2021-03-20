@@ -61,6 +61,31 @@ export class FileController {
         });
     }
 
+    public getThumbnailFile(req: Request, res: Response) {
+        if (!req?.params?.name) return res.status(400).send("No file found in db").end();
+        File.findOne({ name: req.params.name }, async (err: mongoose.CallbackError, files) => {
+            if (err) return res.status(400).send("Db find error: " + err.message).end();
+            if (!files || !files["_doc"] || !files["_doc"]["path"]) return res.status(400).send("No file found in db").end();
+            let file = files._doc;
+            const path: string = "/var/external" + file.path;
+            var hasFile = await new Promise<boolean>((resolve, reject) => {
+                fs.lstat(path, (err, results) => {
+                    if (err) return resolve(false)
+                    return resolve(true);
+                });
+            });
+            if (!hasFile) return res.status(400).send("No file found in file system").end();
+
+            var stream = fs.createReadStream(path);
+
+            stream.on('error', function (error) {
+                return res.status(400).send("Error in streaming: " + error.message).end();
+            });
+
+            return stream.pipe(res);
+        });
+    }
+
     //   /lib/controllers/crmController.ts
     public updateFile(req: Request, res: Response) {
         if (!req?.params?.fileId) return res.status(400).send(new Error("'fileId' Required")).end();

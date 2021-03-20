@@ -15,3 +15,4 @@ fileRoutes.route('/:fileId')
 //.put(fileController.updateFile);
 
 fileRoutes.get('/download/:fileName', fileController.getDownloadFile)
+fileRoutes.get('/thumbnail/:name', fileController.getThumbnailFile)
