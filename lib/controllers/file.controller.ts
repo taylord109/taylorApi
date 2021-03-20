@@ -21,7 +21,7 @@ export class FileController {
 
 
     public getFiles(req: Request, res: Response) {
-        File.find({}, (err, files) => {
+        File.find({}, { projection: { filename: false, thumbnail: false } }, undefined, (err, files) => {
             if (err) return res.send(err);
             return res.json(files);
         });
@@ -30,7 +30,7 @@ export class FileController {
     //   /lib/controllers/crmController.ts
     public getFileById(req: Request, res: Response) {
         if (!req?.params?.fileId) return res.status(400).send(new Error("'fileId' Required")).end();
-        File.findOne({ id: req.params.fileId }, (err, files) => {
+        File.findOne({ id: req.params.fileId }, { projection: { filename: false, thumbnail: false } }, undefined, (err, files) => {
             if (err) return res.send(err);
             return res.json(files);
         });

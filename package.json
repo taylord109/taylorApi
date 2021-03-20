@@ -19,10 +19,12 @@
   "author": "Taylor",
   "license": "UNLICENSED",
   "dependencies": {
+    "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
     "@types/mongodb": "^3.6.9",
     "@types/wake_on_lan": "0.0.28",
     "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
     "express": "^4.16.3",
     "mongodb": "^3.6.4",
     "mongoose": "^5.2.10",
