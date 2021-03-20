@@ -42,15 +42,16 @@ export class FileController {
             if (err) return res.send(err).end();
             if (!files || !files["_doc"] || !files["_doc"]["path"]) return res.send(JSON.stringify(new Error("Filed to find a file"))).end();
             let file = files._doc;
+            const path: string = "/var/external" + file.path;
             var hasFile = await new Promise<boolean>((resolve, reject) => {
-                fs.lstat(file.path, (err, results) => {
+                fs.lstat(path, (err, results) => {
                     if (err) return resolve(false)
                     return resolve(true);
                 });
             });
             if (!hasFile) return res.send(JSON.stringify(new Error("Filed to find a file"))).end();
 
-            var stream = fs.createReadStream("/var/external" + file.path);
+            var stream = fs.createReadStream(path);
 
             stream.on('error', function (error) {
                 res.writeHead(404, 'Not Found');
