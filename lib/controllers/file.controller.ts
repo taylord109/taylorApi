@@ -38,7 +38,7 @@ export class FileController {
 
     public getDownloadFile(req: Request, res: Response) {
         if (!req?.params?.fileName) return res.status(400).send("No file found in db").end();
-        File.findOne({ name: "Ashen Inquisitor A - Supported" }, async (err: mongoose.CallbackError, files) => {
+        File.findOne({ filename: req.params.fileName }, async (err: mongoose.CallbackError, files) => {
             if (err) return res.status(400).send(err.message).end();
             if (!files || !files["_doc"] || !files["_doc"]["path"]) return res.status(400).send("No file found in db").end();
             let file = files._doc;
