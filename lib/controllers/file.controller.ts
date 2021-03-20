@@ -21,18 +21,23 @@ export class FileController {
 
 
     public getFiles(req: Request, res: Response) {
-        File.find({}, { projection: { filename: false, thumbnail: false } }, undefined, (err, files) => {
+        File.find({}, '-path -accessable', undefined, (err, files: Array<mongoose.Document<{ thumbnail?: string }>>) => {
             if (err) return res.send(err);
-            return res.json(files);
+            let filesJson = files.map((file) => {
+                const newFile = file.toJSON();
+                return { ...newFile, "thumbnail": !!newFile["thumbnail"] };
+            })
+            return res.json(filesJson);
         });
     }
 
     //   /lib/controllers/crmController.ts
     public getFileById(req: Request, res: Response) {
-        if (!req?.params?.fileId) return res.status(400).send(new Error("'fileId' Required")).end();
-        File.findOne({ id: req.params.fileId }, { projection: { filename: false, thumbnail: false } }, undefined, (err, files) => {
+        if (!req?.params?.id) return res.status(400).send(new Error("'id' Required")).end();
+        File.findOne({ _id: req.params.id }, "-path -accessable", undefined, (err, files: mongoose.Document<any>) => {
             if (err) return res.send(err);
-            return res.json(files);
+            let fileJson = files.toJSON();
+            return res.json({ ...fileJson, "thumbnail": !!fileJson["thumbnail"] });
         });
     }
 

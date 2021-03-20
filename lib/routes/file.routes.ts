@@ -10,7 +10,7 @@ fileRoutes.route('/')
     .get(fileController.getFiles)
 //.post(fileController.addFile);
 
-fileRoutes.route('/:fileId')
+fileRoutes.route('/:id')
     .get(fileController.getFileById)
 //.put(fileController.updateFile);
 
