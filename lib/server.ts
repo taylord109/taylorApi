@@ -7,11 +7,10 @@ import * as cors from "cors";
 const http = require('http');
 const app = express();
 
-const corsOptions = {
-    origin: ['http://localhost'],
+const corsOptions: cors.CorsOptions = {
+    origin: true,
     allowedHeaders: ["Content-Type", "Access-Control-Allow-Origin", "Authorization", "Access-Control-Allow-Methods", "Access-Control-Request-Headers"],
-    credentials: true,
-    enablePreflight: true
+    preflightContinue: true
 }
 
 app.use(cors(corsOptions));
