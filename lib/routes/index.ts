@@ -1,6 +1,6 @@
 import * as express from 'express'
 import { Router, Request, Response } from "express"
-import { fileRoutes } from "./file.routes"
+import { fileRoutes } from "./file"
 import * as wol from "wake_on_lan";
 import { PCHandler } from '../handlers/pc.handler';
 

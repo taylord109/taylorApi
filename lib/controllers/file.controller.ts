@@ -41,54 +41,31 @@ export class FileController {
         });
     }
 
-    public getDownloadFile(req: Request, res: Response) {
-        if (!req?.params?.fileName) return res.status(400).send("No file found in db").end();
-        File.findOne({ filename: req.params.fileName }, async (err: mongoose.CallbackError, files) => {
-            if (err) return res.status(400).send("Db find error: " + err.message).end();
-            if (!files || !files["_doc"] || !files["_doc"]["path"]) return res.status(400).send("No file found in db").end();
-            let file = files._doc;
-            const path: string = "/var/external" + file.path;
-            var hasFile = await new Promise<boolean>((resolve, reject) => {
-                fs.lstat(path, (err, results) => {
-                    if (err) return resolve(false)
-                    return resolve(true);
+    public download(fileType: 'path' | 'thumbnail' | 'supported' = 'path') {
+        return (req: Request, res: Response) => {
+            if (!req?.params?.id) return res.status(400).send("No Id provided").end();
+            File.findOne({ _id: req?.params?.id }, async (err: mongoose.CallbackError, files) => {
+                if (err) return res.status(400).send("Db find error: " + err.message).end();
+
+                if (!files || !files["_doc"] || !files["_doc"][fileType]) return res.status(400).send(`No ${fileType} found in db`).end();
+                const path: string = "/var/external" + files?._doc[fileType];
+                var hasFile = await new Promise<boolean>((resolve, reject) => {
+                    fs.lstat(path, (err, results) => {
+                        if (err) return resolve(false)
+                        return resolve(true);
+                    });
                 });
-            });
-            if (!hasFile) return res.status(400).send("No file found in file system").end();
+                if (!hasFile) return res.status(400).send("No file found in file system").end();
 
-            var stream = fs.createReadStream(path);
+                var stream = fs.createReadStream(path);
 
-            stream.on('error', function (error) {
-                return res.status(400).send("Error in streaming: " + error.message).end();
-            });
-
-            return stream.pipe(res);
-        });
-    }
-
-    public getThumbnailFile(req: Request, res: Response) {
-        if (!req?.params?.name) return res.status(400).send("No file found in db").end();
-        File.findOne({ name: req.params.name }, async (err: mongoose.CallbackError, files) => {
-            if (err) return res.status(400).send("Db find error: " + err.message).end();
-            if (!files || !files["_doc"] || !files["_doc"]["thumbnail"]) return res.status(400).send("No thumbnail found in db").end();
-            let file = files._doc;
-            const path: string = "/var/external" + file.thumbnail;
-            var hasFile = await new Promise<boolean>((resolve, reject) => {
-                fs.lstat(path, (err, results) => {
-                    if (err) return resolve(false)
-                    return resolve(true);
+                stream.on('error', function (error) {
+                    return res.status(400).send("Error in streaming: " + error.message).end();
                 });
+
+                return stream.pipe(res);
             });
-            if (!hasFile) return res.status(400).send("No file found in file system").end();
-
-            var stream = fs.createReadStream(path);
-
-            stream.on('error', function (error) {
-                return res.status(400).send("Error in streaming: " + error.message).end();
-            });
-
-            return stream.pipe(res);
-        });
+        }
     }
 
     //   /lib/controllers/crmController.ts
