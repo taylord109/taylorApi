@@ -25,7 +25,7 @@ export class FileController {
             if (err) return res.send(err);
             let filesJson = files.map((file) => {
                 const newFile = file.toJSON();
-                return { ...newFile, "thumbnail": !!newFile["thumbnail"] };
+                return { ...newFile, "thumbnail": !!newFile["thumbnail"], "supported": !!newFile["supported"] };
             })
             return res.json(filesJson);
         });
@@ -37,7 +37,7 @@ export class FileController {
         File.findOne({ _id: req.params.id }, "-path -accessable", undefined, (err, files: mongoose.Document<any>) => {
             if (err) return res.send(err);
             let fileJson = files.toJSON();
-            return res.json({ ...fileJson, "thumbnail": !!fileJson["thumbnail"] });
+            return res.json({ ...fileJson, "thumbnail": !!fileJson["thumbnail"], "supported": !!fileJson["supported"] });
         });
     }
 
