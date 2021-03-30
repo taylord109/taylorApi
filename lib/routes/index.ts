@@ -3,10 +3,11 @@ import { Router, Request, Response } from "express"
 import { fileRoutes } from "./file"
 import * as wol from "wake_on_lan";
 import { PCHandler } from '../handlers/pc.handler';
+import { AuthHandler } from '../handlers/auth.handler';
 
 export const allRoutes: Router = express.Router();
 
-allRoutes.use('/files', fileRoutes);
+allRoutes.use('/files', AuthHandler.isAuthenticated, fileRoutes);
 
 
 allRoutes.get('/', (req: Request, res: Response) => {
