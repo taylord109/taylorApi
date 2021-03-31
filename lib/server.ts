@@ -37,7 +37,7 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true }, function (err) {
 app.use(bodyParser.json({ extended: false }));
 app.use(cookieSession({
     maxAge: 24 * 60 * 60 * 1000,
-    keys: [sessionKey]
+    keys: [sessionKey],
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -66,24 +66,35 @@ passport.use(new LocalStrategy(
             if (!user?.password || password !== user?.password) {
                 return done(null, false, { message: 'Incorrect password.' });
             }
+            delete user?.password
             return done(null, user);
         });
     }
 ))
 
 app.post('/login',
-    (req: Request, res: Response, next: NextFunction) => {
-        console.log("Hello");
-        next();
-    },
     passport.authenticate('local'),
     (req: Request, res: Response, next: NextFunction) => {
         if (req.isAuthenticated && req.isAuthenticated()) {
-            return res.status(200).send("Logged In");
+            const saniUser = { username: req?.user ? req?.user['username'] : null }
+            return res.status(200).json(saniUser);
         }
         return res.status(401).end();
     }
 );
+let baseCookieOptions: {
+    name: 'express:sess',
+    httpOnly: true,
+    signed: true,
+    secret: 'secret'
+};
+app.post('/logout', (req, res) => {
+    req.logout();
+
+    res.clearCookie('express:sess', baseCookieOptions)
+    res.clearCookie('express:sess.sig', baseCookieOptions)
+    res.send(true).end();
+});
 
 app.use(allRoutes);
 app.listen(1800, () => {
