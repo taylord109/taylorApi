@@ -6,7 +6,6 @@ import { sessionKey } from "./conf/auth.conf"
 import * as cors from "cors";
 import passport = require("passport");
 import { Strategy as LocalStrategy } from "passport-local"
-import { UserController } from "controllers/user.controller";
 const bodyParser = require("body-parser");
 import { User } from "./controllers/user.controller"
 import cookieSession = require("cookie-session");
@@ -18,9 +17,10 @@ const http = require('http');
 const app = express();
 
 const corsOptions: cors.CorsOptions = {
-    origin: true,
+    origin: 'http://localhost:4200',
+    preflightContinue: true,
     allowedHeaders: ["Content-Type", "Access-Control-Allow-Origin", "Authorization", "Access-Control-Allow-Methods", "Access-Control-Request-Headers"],
-    preflightContinue: true
+    credentials: true
 }
 
 app.use(cors(corsOptions));
@@ -72,6 +72,10 @@ passport.use(new LocalStrategy(
 ))
 
 app.post('/login',
+    (req: Request, res: Response, next: NextFunction) => {
+        console.log("Hello");
+        next();
+    },
     passport.authenticate('local'),
     (req: Request, res: Response, next: NextFunction) => {
         if (req.isAuthenticated && req.isAuthenticated()) {
